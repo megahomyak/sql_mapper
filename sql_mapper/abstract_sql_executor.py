@@ -78,6 +78,10 @@ class AbstractSQLExecutor(ABC):
     def commit(self):
         pass
 
+    @abstractmethod
+    def create_tables(self, *tables: Type[ModelBase]):
+        pass
+
 
 class EmptyAsyncIterator:
 
@@ -126,4 +130,8 @@ class AbstractAsyncSQLExecutor(AbstractSQLExecutor, ABC):
 
     @abstractmethod
     async def commit(self):
+        pass
+
+    @abstractmethod
+    async def create_tables(self, *tables: Type[ModelBase]):
         pass
