@@ -35,7 +35,10 @@ class ModelBase:
 
     def __init__(self, *ordered_fields, **keyword_fields):
         _fields = keyword_fields
+        class_fields = self.__class__._fields
         for field_name, field_value in zip(self._fields, ordered_fields):
+            if field_name not in class_fields:
+                raise ValueError(f"Unknown field: {field_name}")
             _fields[field_name] = field_value
         self._fields = _fields
 
