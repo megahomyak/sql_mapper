@@ -1,18 +1,20 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, Optional
+
+from sql_mapper import exceptions
 
 
 @dataclass
 class TableData:
-    name: str
+    name: Optional[str]
     fields: Dict[str, str]
-    additional_table_lines: str
+    additional_table_lines: Optional[str]
 
 
 class ModelBase:
     _fields: Dict[str, Union[str, Any]]
-    _tablename: str = ""
-    _additional_table_lines: str = ""
+    _tablename: str
+    _additional_table_lines: str
 
     @staticmethod
     def _field_is_valid(field_name: str, field_value: Any):
@@ -36,9 +38,18 @@ class ModelBase:
     def __init__(self, *ordered_fields, **keyword_fields):
         _fields = keyword_fields
         class_fields = self.__class__._fields
-        for field_name, field_value in zip(self._fields, ordered_fields):
+        for field_name in _fields:
             if field_name not in class_fields:
-                raise ValueError(f"Unknown field: {field_name}")
+                raise exceptions.UnknownField(field_name)
+        if len(class_fields) < len(ordered_fields):
+            raise exceptions.TooManyOrderedFields(
+                model_name=self.__class__.__name__,
+                given_amount=len(ordered_fields),
+                actual_amount=len(class_fields)
+            )
+        for field_name, field_value in zip(class_fields, ordered_fields):
+            if field_name in _fields:
+                raise exceptions.FieldAlreadyTaken(field_name)
             _fields[field_name] = field_value
         self._fields = _fields
 
@@ -54,14 +65,16 @@ class ModelBase:
 
     @classmethod
     def get_table_data(cls):
-        if not cls._tablename:
-            raise ValueError(
-                "You need to specify a _tablename to get table data!"
-            )
-        return TableData(
-            name=cls._tablename, fields=cls._fields,
-            additional_table_lines=cls._additional_table_lines
-        )
+        try:
+            name = cls._tablename
+        except AttributeError:
+            name = None
+        fields = cls._fields
+        try:
+            additional_table_lines = cls._additional_table_lines
+        except AttributeError:
+            additional_table_lines = None
+        return TableData(name, fields, additional_table_lines)
 
     def __str__(self):
         arguments = ", ".join(

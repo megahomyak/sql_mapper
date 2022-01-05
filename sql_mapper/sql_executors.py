@@ -1,6 +1,7 @@
 import sqlite3
 from typing import Sequence, Iterable, Type
 
+from sql_mapper import exceptions
 from sql_mapper.abstract_sql_executor import AbstractSQLExecutor
 from sql_mapper.model_base import ModelBase
 
@@ -29,6 +30,10 @@ class SQLiteSQLExecutor(AbstractSQLExecutor):
     def create_tables(self, *tables: Type[ModelBase]):
         for table in tables:
             table_data = table.get_table_data()
+            if not table_data.name:
+                raise exceptions.TablenameNotSpecifiedOnTableCreation(
+                    model_name=table.__name__
+                )
             sql_statement = (
                 f"CREATE TABLE IF NOT EXISTS {table_data.name} ("
                 + ",".join(
