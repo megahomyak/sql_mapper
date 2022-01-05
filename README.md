@@ -3,9 +3,12 @@
 Basically what it does is: it executes some SQL thru a database connector you
 fed it, maps it to some model and gives to u. Also it can create tables
 
-## How to install it
+## How to install and import it
 
 `pip install sql_mapper`
+
+`import sql_mapper` <- **WARNING: PACKAGE NAME IS DIFFERENT
+                         FROM THE PROJECT NAME**
 
 ## Some abstract info about a model
 
