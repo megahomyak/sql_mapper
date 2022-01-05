@@ -1,3 +1,6 @@
 .pytest_cache
 .idea
 sql_mapper.iml
+setup.py
+MANIFEST
+dist
