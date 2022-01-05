@@ -5,10 +5,10 @@ fed it, maps it to some model and gives to u. Also it can create tables
 
 ## How to install and import it
 
-`pip install sql_mapper`
+`pip install megahomyaks_sql_mapper` <- **WARNING: PACKAGE NAME IS DIFFERENT
+                                          FROM THE PROJECT NAME**
 
-`import sql_mapper` <- **WARNING: PACKAGE NAME IS DIFFERENT
-                         FROM THE PROJECT NAME**
+`import sql_mapper` 
 
 ## Some abstract info about a model
 
