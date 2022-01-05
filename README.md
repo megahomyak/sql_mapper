@@ -17,7 +17,9 @@ fed it, maps it to some model and gives to u. Also it can create tables
     class MyFirstModel(ModelBase):
         _tablename = "obvious"
         # You don't need to specify a _tablename if you will not create a table
-        # for this model using an SQL executor
+        # for this model using an SQL executor OR insert it using parameter
+        # marks from this mapper
+        # (sql_executor.execute("INSERT INTO ?", [MyFirstModel("a", "b")]))
 
         first_field: str = "TEXT"
         # Value of each field is its datatype that will be used when SQL table

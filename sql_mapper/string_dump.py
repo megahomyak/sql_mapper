@@ -3,6 +3,7 @@ import typing
 from abc import ABC, abstractmethod
 from typing import Union, List, Iterable
 
+from sql_mapper import exceptions
 from sql_mapper.model_base import ModelBase
 
 QUESTION_MARK_PATTERN = re.compile(r"\?")
@@ -28,16 +29,16 @@ class BaseFormattableString(ABC):
         """
         Makes a query that can be passed to the database connector, replacing
         every BaseModel instance with its values and its corresponding
-        question mark with something like "(field1, field2, field3) VALUES
-        (?,?,?)" (depends on the database connector).
+        question mark with something like "tablename (field1, field2, field3)
+        VALUES (?,?,?)" (depends on the database connector).
 
         So,
 
         old query:
-            "INSERT INTO a ?", instance_of_a
+            "INSERT INTO ?", instance_of_model
         new query:
-            "INSERT INTO a (field1, field2, ...) VALUES (?, ?, ...)",
-            values_from_instance_of_a
+            "INSERT INTO tablename (field1, field2, ...) VALUES (?, ?, ...)",
+            values_from_instance_of_model
         """
         pass
 
@@ -55,9 +56,14 @@ class FormattableString(BaseFormattableString):
         for argument in old_arguments:
             if isinstance(argument, ModelBase):
                 new_arguments.extend(argument.instance_fields.values())
+                tablename = argument.get_tablename()
+                if not tablename:
+                    raise exceptions.TablenameNotSpecifiedOnInsertion(
+                        model_name=argument.__class__.__name__
+                    )
                 yield (
-                    "(" + ",".join(argument.instance_fields.keys()) + ")VALUES("
-                    + ",".join(
+                    tablename + "(" + ",".join(argument.instance_fields.keys())
+                    + ")VALUES(" + ",".join(
                         new_parameter_mark
                         for _ in range(len(argument.instance_fields))
                     ) + ")"
@@ -123,13 +129,13 @@ class StringDump:
     ) -> NewQueryStringWithArguments:
         """
         old query:
-            INSERT INTO a ?
+            INSERT INTO ?
         old arguments:
-            instance_of_a
+            instance_of_model
         new query:
-            INSERT INTO a (field1, field2, ...) VALUES (?, ?, ...)
+            INSERT INTO tablename (field1, field2, ...) VALUES (?, ?, ...)
         new arguments:
-            values_from_instance_of_a
+            values_from_instance_of_model
         """
         new_arguments = []
         new_query = "".join(

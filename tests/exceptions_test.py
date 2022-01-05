@@ -36,3 +36,11 @@ def test_exceptions():
         str(e.value) ==
         "unknown field 'c'! (It is not declared in the model)"
     )
+    with pytest.raises(exceptions.TablenameNotSpecifiedOnInsertion) as e:
+        sql_executor.execute("INSERT INTO ?", [A(1, "abc")])
+    assert (
+        str(e.value) ==
+        "tablename not specified for the model 'A'! SQL mapper "
+        "doesn't know what tablename to use in query parameter mark "
+        "substitution, so add the tablename to the model!"
+    )

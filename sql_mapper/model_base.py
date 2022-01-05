@@ -59,16 +59,20 @@ class ModelBase:
     def __eq__(self, other: "ModelBase"):
         return self.instance_fields == other.instance_fields
 
+    @classmethod
+    def get_tablename(cls) -> Optional[str]:
+        try:
+            return cls._tablename
+        except AttributeError:
+            return None
+
     @property
     def instance_fields(self) -> Dict[str, str]:
         return self._fields
 
     @classmethod
     def get_table_data(cls):
-        try:
-            name = cls._tablename
-        except AttributeError:
-            name = None
+        name = cls.get_tablename()
         fields = cls._fields
         try:
             additional_table_lines = cls._additional_table_lines

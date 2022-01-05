@@ -41,17 +41,16 @@ def test_example_from_docs():
         book_ids = []
         for book_title in book_names:
             sql_executor.execute(
-                "INSERT INTO books ?", [Book(title=book_title)]
+                "INSERT INTO ?", [Book(title=book_title)]
             )
             book_ids.append(sql_executor.cursor.lastrowid)
         sql_executor.execute(
-            "INSERT INTO authors ?", [Author(name=author_name)]
+            "INSERT INTO ?", [Author(name=author_name)]
         )
+        author_id = sql_executor.cursor.lastrowid
         sql_executor.execute_many(
-            "INSERT INTO books_to_authors ?", [
-                [BookToAuthor(
-                    book_id=book_id, author_id=sql_executor.cursor.lastrowid
-                )]
+            "INSERT INTO ?", [
+                [BookToAuthor(book_id, author_id)]
                 for book_id in book_ids
             ]
         )

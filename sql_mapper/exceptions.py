@@ -12,10 +12,13 @@ class TooManyOrderedFields(Exception):
         )
 
 
-class FieldAlreadyTaken(Exception):
+class _FieldNameMixin:
 
     def __init__(self, field_name: str):
         self.field_name = field_name
+
+
+class FieldAlreadyTaken(_FieldNameMixin, Exception):
 
     def __str__(self):
         return (
@@ -24,10 +27,7 @@ class FieldAlreadyTaken(Exception):
         )
 
 
-class UnknownField(Exception):
-
-    def __init__(self, field_name: str):
-        self.field_name = field_name
+class UnknownField(_FieldNameMixin, Exception):
 
     def __str__(self):
         return (
@@ -36,13 +36,26 @@ class UnknownField(Exception):
         )
 
 
-class TablenameNotSpecifiedOnTableCreation(Exception):
+class _ModelNameMixin:
 
     def __init__(self, model_name: str):
         self.model_name = model_name
+
+
+class TablenameNotSpecifiedOnTableCreation(_ModelNameMixin, Exception):
 
     def __str__(self):
         return (
             f"tablename not specified for the model '{self.model_name}'! You "
             f"cannot create an unnamed table!"
+        )
+
+
+class TablenameNotSpecifiedOnInsertion(_ModelNameMixin, Exception):
+
+    def __str__(self):
+        return (
+            f"tablename not specified for the model '{self.model_name}'! SQL "
+            f"mapper doesn't know what tablename to use in query parameter "
+            f"mark substitution, so add the tablename to the model!"
         )

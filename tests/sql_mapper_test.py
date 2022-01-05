@@ -14,7 +14,7 @@ def test_sql_mapper():
     sql_executor = SQLiteSQLExecutor.new(":memory:")
     sql_executor.create_tables(A)
 
-    sql_executor.execute_many("INSERT INTO a ?", (
+    sql_executor.execute_many("INSERT INTO ?", (
         [A(1, "a")],
         [A(c="b")],
         [A(c="c")]
@@ -23,7 +23,7 @@ def test_sql_mapper():
     sql_executor.execute(
         "INSERT INTO a VALUES (?, ?)",
         [*A(4, "d").instance_fields.values()]
-    )  # Identical to sql_executor.execute("INSERT INTO a ?", [A(7, 8)])
+    )  # Identical to sql_executor.execute("INSERT INTO ?", [A(7, 8)])
 
     sql_executor.execute("INSERT INTO a VALUES (?, " + raw("'?'") + ")", [5])
 
