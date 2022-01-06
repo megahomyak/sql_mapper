@@ -6,7 +6,7 @@ fed it, maps it to some model and gives to u. Also it can create tables
 ## How to install and import it
 
 `pip install megahomyaks_sql_mapper` <- **WARNING: PACKAGE NAME IS DIFFERENT
-                                          FROM THE PROJECT NAME**
+                                          FROM THE MODULE NAME!!!**
 
 `import sql_mapper` 
 
